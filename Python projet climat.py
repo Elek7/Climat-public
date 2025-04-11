@@ -7,7 +7,7 @@ temperature = 14.0
 co2 = 400
 score = 100
 temperature_max = 19.0
-temperature_min = -20.0 
+temperature_min = -20.0
 annees, temperatures, co2_niveaux, scores = [], [], [], []
 jeu_termine = False
 
@@ -27,23 +27,28 @@ evenements = [
 
 st.title("Simulation de l'Évolution du Climat")
 
-if not jeu_termine:
+if jeu_termine:
+    st.error("La partie est terminée.")
+else:
     st.write(f"Température actuelle : {temperature:.2f}°C")
     st.write(f"Niveau de CO₂ : {co2} ppm")
     st.write(f"Score : {score}")
-    
+
     choix_action = st.radio("Quelle action souhaitez-vous entreprendre cette année ?", list(actions.keys()))
 
     if st.button("Valider l'action"):
         effet_co2, effet_score = actions[choix_action]
         co2 += effet_co2
         score += effet_score
+        
         if random.random() < 0.3:
             evenement, impact = random.choice(evenements)
             co2 += impact
             st.write(f"Événement : {evenement} ({impact} ppm)")
+
         temperature += (co2 - 400) * 0.008
         temperature = max(min(temperature, temperature_max), temperature_min)
+
         annees.append(len(annees) + 1)
         temperatures.append(temperature)
         co2_niveaux.append(co2)
@@ -61,10 +66,7 @@ if not jeu_termine:
         elif len(annees) >= 50 and temperature < temperature_max:
             jeu_termine = True
             st.success("Vous avez réussi à maintenir une température stable. Victoire.")
-    
-else:
-    st.error("La partie est terminée.")
-    
+
 fig, ax = plt.subplots(1, 2, figsize=(12, 5))
 ax[0].plot(annees, temperatures, color="red")
 ax[0].set_title("Évolution de la Température")
@@ -84,4 +86,5 @@ donnees = pd.DataFrame({
 })
 
 st.dataframe(donnees)
+
 st.download_button("Télécharger les résultats", donnees.to_csv(index=False), "resultats_climat.csv", "text/csv")
