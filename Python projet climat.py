@@ -7,7 +7,7 @@ temperature = 14.0
 co2 = 400
 score = 100
 temperature_max = 19.0
-temperature_min = -20.0
+temperature_min = -20.0 
 annees, temperatures, co2_niveaux, scores = [], [], [], []
 jeu_termine = False
 
@@ -31,6 +31,7 @@ if not jeu_termine:
     st.write(f"Température actuelle : {temperature:.2f}°C")
     st.write(f"Niveau de CO₂ : {co2} ppm")
     st.write(f"Score : {score}")
+    
     choix_action = st.radio("Quelle action souhaitez-vous entreprendre cette année ?", list(actions.keys()))
 
     if st.button("Valider l'action"):
@@ -60,45 +61,27 @@ if not jeu_termine:
         elif len(annees) >= 50 and temperature < temperature_max:
             jeu_termine = True
             st.success("Vous avez réussi à maintenir une température stable. Victoire.")
-
-    fig, ax = plt.subplots(1, 2, figsize=(12, 5))
-    ax[0].plot(annees, temperatures, color="red")
-    ax[0].set_title("Évolution de la Température")
-    ax[0].set_xlabel("Années")
-    ax[0].set_ylabel("Température (°C)")
-    ax[1].plot(annees, co2_niveaux, color="green")
-    ax[1].set_title("Évolution du CO₂")
-    ax[1].set_xlabel("Années")
-    ax[1].set_ylabel("CO₂ (ppm)")
-    st.pyplot(fig)
-
-    donnees = pd.DataFrame({
-        "Année": annees,
-        "Température (°C)": temperatures,
-        "CO₂ (ppm)": co2_niveaux,
-        "Score": scores
-    })
-    st.dataframe(donnees)
-    st.download_button("Télécharger les résultats", donnees.to_csv(index=False), "resultats_climat.csv", "text/csv")
-
+    
 else:
-    st.error("La partie est terminée")
-    fig, ax = plt.subplots(1, 2, figsize=(12, 5))
-    ax[0].plot(annees, temperatures, color="red")
-    ax[0].set_title("Évolution de la Température")
-    ax[0].set_xlabel("Années")
-    ax[0].set_ylabel("Température (°C)")
-    ax[1].plot(annees, co2_niveaux, color="green")
-    ax[1].set_title("Évolution du CO₂")
-    ax[1].set_xlabel("Années")
-    ax[1].set_ylabel("CO₂ (ppm)")
-    st.pyplot(fig)
+    st.error("La partie est terminée.")
+    
+fig, ax = plt.subplots(1, 2, figsize=(12, 5))
+ax[0].plot(annees, temperatures, color="red")
+ax[0].set_title("Évolution de la Température")
+ax[0].set_xlabel("Années")
+ax[0].set_ylabel("Température (°C)")
+ax[1].plot(annees, co2_niveaux, color="green")
+ax[1].set_title("Évolution du CO₂")
+ax[1].set_xlabel("Années")
+ax[1].set_ylabel("CO₂ (ppm)")
+st.pyplot(fig)
 
-    donnees = pd.DataFrame({
-        "Année": annees,
-        "Température (°C)": temperatures,
-        "CO₂ (ppm)": co2_niveaux,
-        "Score": scores
-    })
-    st.dataframe(donnees)
-    st.download_button("Télécharger les résultats", donnees.to_csv(index=False), "resultats_climat.csv", "text/csv")
+donnees = pd.DataFrame({
+    "Année": annees,
+    "Température (°C)": temperatures,
+    "CO₂ (ppm)": co2_niveaux,
+    "Score": scores
+})
+
+st.dataframe(donnees)
+st.download_button("Télécharger les résultats", donnees.to_csv(index=False), "resultats_climat.csv", "text/csv")
