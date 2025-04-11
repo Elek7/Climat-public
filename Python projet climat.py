@@ -34,9 +34,8 @@ st.write(f"Score : {st.session_state.score}")
 
 choix_action = st.radio("Quelle action souhaitez-vous entreprendre cette année ?", list(actions.keys()))
 
-if st.button("Valider l'action"):
-
-    if not st.session_state.jeu_termine:
+if not st.session_state.jeu_termine:
+    if st.button("Valider l'action"):
         effet_co2, effet_score = actions[choix_action]
         st.session_state.co2 += effet_co2
         st.session_state.score += effet_score
@@ -44,10 +43,10 @@ if st.button("Valider l'action"):
             evenement, impact = random.choice(evenements)
             st.session_state.co2 += impact
             st.write(f"Événement : {evenement} ({impact} ppm)")
-        
+
         st.session_state.temperature += (st.session_state.co2 - 400) * 0.008
         st.session_state.temperature = max(min(st.session_state.temperature, 19.0), 10.0)
-        
+
         st.session_state.annees.append(len(st.session_state.annees) + 1)
         st.session_state.temperatures.append(st.session_state.temperature)
         st.session_state.co2_niveaux.append(st.session_state.co2)
@@ -63,25 +62,27 @@ if st.button("Valider l'action"):
             st.session_state.jeu_termine = True
             st.success("Vous avez réussi à maintenir une température stable. Victoire.")
 
-        fig, ax = plt.subplots(1, 2, figsize=(12, 5))
-        ax[0].plot(st.session_state.annees, st.session_state.temperatures, color="red")
-        ax[0].set_title("Évolution de la Température")
-        ax[0].set_xlabel("Années")
-        ax[0].set_ylabel("Température (°C)")
-        ax[1].plot(st.session_state.annees, st.session_state.co2_niveaux, color="green")
-        ax[1].set_title("Évolution du CO₂")
-        ax[1].set_xlabel("Années")
-        ax[1].set_ylabel("CO₂ (ppm)")
-        st.pyplot(fig)
+if not st.session_state.jeu_termine:
+    fig, ax = plt.subplots(1, 2, figsize=(12, 5))
+    ax[0].plot(st.session_state.annees, st.session_state.temperatures, color="red")
+    ax[0].set_title("Évolution de la Température")
+    ax[0].set_xlabel("Années")
+    ax[0].set_ylabel("Température (°C)")
+    ax[1].plot(st.session_state.annees, st.session_state.co2_niveaux, color="green")
+    ax[1].set_title("Évolution du CO₂")
+    ax[1].set_xlabel("Années")
+    ax[1].set_ylabel("CO₂ (ppm)")
+    st.pyplot(fig)
 
-        donnees = pd.DataFrame({
-            "Année": st.session_state.annees,
-            "Température (°C)": st.session_state.temperatures,
-            "CO₂ (ppm)": st.session_state.co2_niveaux,
-            "Score": st.session_state.scores
-        })
-        st.dataframe(donnees)
-        st.download_button("Télécharger les résultats", donnees.to_csv(index=False), "resultats_climat.csv", "text/csv")
+if not st.session_state.jeu_termine:
+    donnees = pd.DataFrame({
+        "Année": st.session_state.annees,
+        "Température (°C)": st.session_state.temperatures,
+        "CO₂ (ppm)": st.session_state.co2_niveaux,
+        "Score": st.session_state.scores
+    })
+    st.dataframe(donnees)
+    st.download_button("Télécharger les résultats", donnees.to_csv(index=False), "resultats_climat.csv", "text/csv")
 
 else:
     st.warning("Cliquez sur 'Valider l'action' pour continuer.")
