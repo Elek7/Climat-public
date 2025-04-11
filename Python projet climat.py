@@ -45,9 +45,9 @@ if not st.session_state.jeu_termine:
             st.write(f"Événement : {evenement} ({impact} ppm)")
 
         st.session_state.temperature += (st.session_state.co2 - 400) * 0.008
-        st.session_state.temperature = max(min(st.session_state.temperature, 19.0), 10.0)
+        st.session_state.temperature = max(min(st.session_state.temperature, 19.0), -20.0)
 
-        if st.session_state.temperature <= 10.0:
+        if st.session_state.temperature <= -20.0:
             st.session_state.jeu_termine = True
             st.error("La Terre est devenue trop froide. Défaite.")
         else:
@@ -86,6 +86,3 @@ if not st.session_state.jeu_termine:
     })
     st.dataframe(donnees)
     st.download_button("Télécharger les résultats", donnees.to_csv(index=False), "resultats_climat.csv", "text/csv")
-
-else:
-    st.warning("Cliquez sur 'Valider l'action' pour continuer.")
