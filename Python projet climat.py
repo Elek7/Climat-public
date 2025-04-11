@@ -50,6 +50,7 @@ if not st.session_state.jeu_termine:
         if st.session_state.temperature <= -20.0:
             st.session_state.jeu_termine = True
             st.error("La Terre est devenue trop froide. Défaite.")
+            st.download_button("Télécharger les résultats", donnees.to_csv(index=False), "resultats_climat.csv", "text/csv")
         else:
             st.session_state.annees.append(len(st.session_state.annees) + 1)
             st.session_state.temperatures.append(st.session_state.temperature)
@@ -59,12 +60,15 @@ if not st.session_state.jeu_termine:
         if st.session_state.temperature >= 19.0:
             st.session_state.jeu_termine = True
             st.error("La température a dépassé 19°C. Défaite.")
+            st.download_button("Télécharger les résultats", donnees.to_csv(index=False), "resultats_climat.csv", "text/csv")
         elif st.session_state.score <= 0:
             st.session_state.jeu_termine = True
             st.error("Votre score est tombé à 0. Défaite.")
+            st.download_button("Télécharger les résultats", donnees.to_csv(index=False), "resultats_climat.csv", "text/csv")
         elif len(st.session_state.annees) >= 50 and st.session_state.temperature < 19.0:
             st.session_state.jeu_termine = True
             st.success("Vous avez réussi à maintenir une température stable. Victoire.")
+            st.download_button("Télécharger les résultats", donnees.to_csv(index=False), "resultats_climat.csv", "text/csv")
 
 fig, ax = plt.subplots(1, 2, figsize=(12, 5))
 ax[0].plot(st.session_state.annees, st.session_state.temperatures, color="red")
