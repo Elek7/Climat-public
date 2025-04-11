@@ -66,17 +66,16 @@ if not st.session_state.jeu_termine:
             st.session_state.jeu_termine = True
             st.success("Vous avez réussi à maintenir une température stable. Victoire.")
 
-if not st.session_state.jeu_termine:
-    fig, ax = plt.subplots(1, 2, figsize=(12, 5))
-    ax[0].plot(st.session_state.annees, st.session_state.temperatures, color="red")
-    ax[0].set_title("Évolution de la Température")
-    ax[0].set_xlabel("Années")
-    ax[0].set_ylabel("Température (°C)")
-    ax[1].plot(st.session_state.annees, st.session_state.co2_niveaux, color="green")
-    ax[1].set_title("Évolution du CO₂")
-    ax[1].set_xlabel("Années")
-    ax[1].set_ylabel("CO₂ (ppm)")
-    st.pyplot(fig)
+fig, ax = plt.subplots(1, 2, figsize=(12, 5))
+ax[0].plot(st.session_state.annees, st.session_state.temperatures, color="red")
+ax[0].set_title("Évolution de la Température")
+ax[0].set_xlabel("Années")
+ax[0].set_ylabel("Température (°C)")
+ax[1].plot(st.session_state.annees, st.session_state.co2_niveaux, color="green")
+ax[1].set_title("Évolution du CO₂")
+ax[1].set_xlabel("Années")
+ax[1].set_ylabel("CO₂ (ppm)")
+st.pyplot(fig)
 
 if not st.session_state.jeu_termine:
     donnees = pd.DataFrame({
