@@ -47,10 +47,14 @@ if not st.session_state.jeu_termine:
         st.session_state.temperature += (st.session_state.co2 - 400) * 0.008
         st.session_state.temperature = max(min(st.session_state.temperature, 19.0), 10.0)
 
-        st.session_state.annees.append(len(st.session_state.annees) + 1)
-        st.session_state.temperatures.append(st.session_state.temperature)
-        st.session_state.co2_niveaux.append(st.session_state.co2)
-        st.session_state.scores.append(st.session_state.score)
+        if st.session_state.temperature <= 10.0:
+            st.session_state.jeu_termine = True
+            st.error("La Terre est devenue trop froide. Défaite.")
+        else:
+            st.session_state.annees.append(len(st.session_state.annees) + 1)
+            st.session_state.temperatures.append(st.session_state.temperature)
+            st.session_state.co2_niveaux.append(st.session_state.co2)
+            st.session_state.scores.append(st.session_state.score)
 
         if st.session_state.temperature >= 19.0:
             st.session_state.jeu_termine = True
