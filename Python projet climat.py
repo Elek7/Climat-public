@@ -1,12 +1,16 @@
 import random, pandas as pd, matplotlib.pyplot as plt, streamlit as st
 
-temperature = 14.0
-co2 = 400
-score = 100
-temperature_max = 19.0
-temperature_min = 10.0
-annees, temperatures, co2_niveaux, scores = [], [], [], []
-jeu_termine = False
+if "temperature" not in st.session_state:
+    st.session_state.temperature = 14.0
+    st.session_state.co2 = 400
+    st.session_state.score = 100
+    st.session_state.temperature_max = 19.0
+    st.session_state.temperature_min = 10.0
+    st.session_state.annees = []
+    st.session_state.temperatures = []
+    st.session_state.co2_niveaux = []
+    st.session_state.scores = []
+    st.session_state.jeu_termine = False
 
 actions = {
     "Réduire les émissions de CO₂": (-30, 8),
@@ -23,55 +27,59 @@ evenements = [
 ]
 
 st.title("Simulation de l'Évolution du Climat")
-st.write(f"Température actuelle : {temperature:.2f}°C")
-st.write(f"Niveau de CO₂ : {co2} ppm")
-st.write(f"Score : {score}")
+st.write(f"Température actuelle : {st.session_state.temperature:.2f}°C")
+st.write(f"Niveau de CO₂ : {st.session_state.co2} ppm")
+st.write(f"Score : {st.session_state.score}")
 choix_action = st.radio("Quelle action souhaitez-vous entreprendre cette année ?", list(actions.keys()))
 
-if st.button("Valider l'action"):
+if st.button("Valider l'action") and not st.session_state.jeu_termine:
     effet_co2, effet_score = actions[choix_action]
-    co2 += effet_co2
-    score += effet_score
+    st.session_state.co2 += effet_co2
+    st.session_state.score += effet_score
+
     if random.random() < 0.3:
         evenement, impact = random.choice(evenements)
-        co2 += impact
+        st.session_state.co2 += impact
         st.write(f"Événement : {evenement} ({impact} ppm)")
-    temperature += (co2 - 400) * 0.008
-    temperature = max(min(temperature, temperature_max), temperature_min)
-    annees.append(len(annees) + 1)
-    temperatures.append(temperature)
-    co2_niveaux.append(co2)
-    scores.append(score)
 
-    if temperature >= temperature_max:
-        jeu_termine = True
+    st.session_state.temperature += (st.session_state.co2 - 400) * 0.008
+    st.session_state.temperature = max(min(st.session_state.temperature, st.session_state.temperature_max), st.session_state.temperature_min)
+
+    st.session_state.annees.append(len(st.session_state.annees) + 1)
+    st.session_state.temperatures.append(st.session_state.temperature)
+    st.session_state.co2_niveaux.append(st.session_state.co2)
+    st.session_state.scores.append(st.session_state.score)
+
+    if st.session_state.temperature >= st.session_state.temperature_max:
+        st.session_state.jeu_termine = True
         st.error("La température a dépassé 19°C. Défaite.")
-    elif temperature <= temperature_min:
-        jeu_termine = True
+    elif st.session_state.temperature <= st.session_state.temperature_min:
+        st.session_state.jeu_termine = True
         st.error("La Terre est devenue trop froide. Défaite.")
-    elif score <= 0:
-        jeu_termine = True
+    elif st.session_state.score <= 0:
+        st.session_state.jeu_termine = True
         st.error("Votre score est tombé à 0. Défaite.")
-    elif len(annees) >= 50 and temperature < temperature_max:
-        jeu_termine = True
+    elif len(st.session_state.annees) >= 50 and st.session_state.temperature < st.session_state.temperature_max:
+        st.session_state.jeu_termine = True
         st.success("Vous avez réussi à maintenir une température stable. Victoire.")
 
+if st.session_state.annees:
     fig, ax = plt.subplots(1, 2, figsize=(12, 5))
-    ax[0].plot(annees, temperatures, color="red")
+    ax[0].plot(st.session_state.annees, st.session_state.temperatures, color="red")
     ax[0].set_title("Évolution de la Température")
     ax[0].set_xlabel("Années")
     ax[0].set_ylabel("Température (°C)")
-    ax[1].plot(annees, co2_niveaux, color="green")
+    ax[1].plot(st.session_state.annees, st.session_state.co2_niveaux, color="green")
     ax[1].set_title("Évolution du CO₂")
     ax[1].set_xlabel("Années")
     ax[1].set_ylabel("CO₂ (ppm)")
     st.pyplot(fig)
 
     donnees = pd.DataFrame({
-        "Année": annees,
-        "Température (°C)": temperatures,
-        "CO₂ (ppm)": co2_niveaux,
-        "Score": scores
+        "Année": st.session_state.annees,
+        "Température (°C)": st.session_state.temperatures,
+        "CO₂ (ppm)": st.session_state.co2_niveaux,
+        "Score": st.session_state.scores
     })
     st.dataframe(donnees)
     st.download_button("Télécharger les résultats", donnees.to_csv(index=False), "resultats_climat.csv", "text/csv")
