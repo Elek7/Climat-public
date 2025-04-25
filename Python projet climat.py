@@ -33,6 +33,12 @@ st.title("Simulation de l'Évolution du Climat")
 
 if st.session_state.jeu_termine:
     st.error("La partie est terminée.")
+    if st.button("Recommencer une partie"):
+    st.markdown("""
+        <script>
+        window.location.reload();
+        </script>
+    """, unsafe_allow_html=True)
 else:
     st.write(f"Température actuelle : {st.session_state.temperature:.2f}°C")
     st.write(f"Niveau de CO₂ : {st.session_state.co2} ppm")
